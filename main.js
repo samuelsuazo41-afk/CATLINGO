@@ -95,6 +95,55 @@ const INTRO_SLIDES = [
   {emoji: "🚀", titol: "A jugar!", text: "Prem Saltar o toca la pantalla per començar"}
 ];
 
+// ===== INTRO =====
+function mostrarIntro() {
+  const introEl = document.getElementById('intro');
+  if (!introEl) return;
+  introEl.style.display = 'flex';
+  slideActual = 0;
+  pintarSlide();
+  introEl.onclick = () => seguentSlide();
+}
+
+function pintarSlide() {
+  const slide = INTRO_SLIDES[slideActual];
+  document.getElementById('intro-emoji').textContent = slide.emoji;
+  document.getElementById('intro-titol').textContent = slide.titol;
+  document.getElementById('intro-text').textContent = slide.text;
+  document.getElementById('intro-dots').innerHTML = INTRO_SLIDES.map((_, i) => `<span style="opacity:${i===slideActual?1:0.3}">●</span>`).join(' ');
+
+  const btn = document.getElementById('intro-btn');
+  btn.textContent = slideActual === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    seguentSlide();
+  };
+
+  const saltarBtn = document.querySelector('#intro button:last-child');
+  if (saltarBtn) {
+    saltarBtn.onclick = (e) => {
+      e.stopPropagation();
+      saltarIntro();
+    };
+  }
+}
+
+function seguentSlide() {
+  vibrar();
+  if (slideActual < INTRO_SLIDES.length - 1) {
+    slideActual++;
+    pintarSlide();
+  } else {
+    saltarIntro();
+  }
+}
+
+function saltarIntro() {
+  estat.introVist = true;
+  guardarEstat();
+  document.getElementById('intro').style.display = 'none';
+}
+
 // ===== UTILS =====
 function quitarSkinTone(emoji) {
   return emoji.replace(/[\u{1F3FB}-\u{1F3FF}]/gu, '');
