@@ -330,7 +330,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 10000;
 }
 .intro-content {
   background: var(--card);
@@ -436,8 +436,8 @@ header {
   </div>
 </header>
 
-<!-- INTRO -->
-<div id="intro" class="intro-overlay" style="display:none;">
+<!-- INTRO - CANVI: display:flex per sortir sempre -->
+<div id="intro" class="intro-overlay" style="display:flex;">
   <div class="intro-content">
     <div id="intro-emoji" class="intro-emoji">👋</div>
     <h2 id="intro-titol" class="intro-titol">Benvingut</h2>
