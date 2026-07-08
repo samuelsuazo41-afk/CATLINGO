@@ -127,7 +127,7 @@ function saltarIntro() {
 }
 
 function mostrarIntro() {
-  if (estat.introVist) return; // si ya la vio, no mostrar
+  if (estat.introVist) return;
   introIndex = 0;
   pintarSlide();
   introEl.style.display = 'flex';
@@ -334,54 +334,7 @@ function construirTotsEmojis() {
   TOTS_EMOJIS = BIBLIOTECA_PLA.map(e => ({...e}));
 }
 
-// ===== INTRO =====
-function mostrarIntro() {
-  const introEl = document.getElementById('intro');
-  if (!introEl) return;
-  introEl.style.display = 'flex';
-  slideActual = 0;
-  pintarSlide();
-  introEl.onclick = () => seguentSlide();
-}
 
-function pintarSlide() {
-  const slide = INTRO_SLIDES[slideActual];
-  document.getElementById('intro-emoji').textContent = slide.emoji;
-  document.getElementById('intro-titol').textContent = slide.titol;
-  document.getElementById('intro-text').textContent = slide.text;
-  document.getElementById('intro-dots').innerHTML = INTRO_SLIDES.map((_, i) => `<span style="opacity:${i===slideActual?1:0.3}">●</span>`).join(' ');
-
-  const btn = document.getElementById('intro-btn');
-  btn.textContent = slideActual === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
-  btn.onclick = (e) => {
-    e.stopPropagation();
-    seguentSlide();
-  };
-0
-  const saltarBtn = document.querySelector('#intro button:last-child');
-  if (saltarBtn) {
-    saltarBtn.onclick = (e) => {
-      e.stopPropagation();
-      saltarIntro();
-    };
-  }
-}
-
-function seguentSlide() {
-  vibrar();
-  if (slideActual < INTRO_SLIDES.length - 1) {
-    slideActual++;
-    pintarSlide();
-  } else {
-    saltarIntro();
-  }
-}
-
-function saltarIntro() {
-  estat.introVist = true;
-  guardarEstat();
-  document.getElementById('intro').style.display = 'none';
-}0
 
 // ===== MAPA - 100 NIVELLS, 25 FRASES PER NIVELL =====
 function renderMapa() {
