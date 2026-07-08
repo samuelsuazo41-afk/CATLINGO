@@ -81,68 +81,61 @@ let NIVELL_MINIJOC = {minEmojis: 2, maxEmojis: 5, nivelActual: parseInt(localSto
 let minijoc = {fraseObjectiu: null, emojisTriats: [], emojisDisponibles: []};
 let minijocInicialitzat = false;
 
+// ===== INTRO =====
+const INTRO_SLIDES = [
+  { emoji: '🙀', titol: 'Benvingut a Cat Lingo', text: 'Aprèn català jugant amb el teu gat virtual.' },
+  { emoji: '⛷️', titol: 'Vocabulari visual', text: 'Missions amb mapes i jocs per aprendre paraules noves.' },
+  { emoji: '📝', titol: 'Gramàtica fàcil', text: 'Explica’t les regles pas a pas i practica-les.' },
+  { emoji: '📚', titol: 'Lectures adaptades', text: 'Històries curtes amb vocabulari al teu nivell.' },
+  { emoji: '🚀', titol: 'A jugar!', text: 'Cuida el teu gat i desbloqueja recompenses.' }
+];
+
+let introIndex = 0;
+const introEl = document.getElementById('intro');
+const emojiEl = document.getElementById('intro-emoji');
+const titolEl = document.getElementById('intro-titol');
+const textEl = document.getElementById('intro-text');
+const dotsEl = document.getElementById('intro-dots');
+const btnEl = document.getElementById('intro-btn');
+
+function pintarSlide() {
+  const s = INTRO_SLIDES[introIndex];
+  emojiEl.textContent = s.emoji;
+  titolEl.textContent = s.titol;
+  textEl.textContent = s.text;
+  dotsEl.innerHTML = INTRO_SLIDES.map((_, i) => `<span class="dot ${i===introIndex?'actiu':''}"></span>`).join('');
+  btnEl.textContent = introIndex === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
+}
+
+function avancarIntro() {
+  introIndex++;
+  if (introIndex >= INTRO_SLIDES.length) return tancarIntro();
+  pintarSlide();
+}
+
+function tancarIntro() {
+  introEl.style.display = 'none';
+}
+
+function saltarIntro() {
+  tancarIntro();
+}
+
+function iniciarIntro() {
+  introIndex = 0;
+  pintarSlide();
+  introEl.style.display = 'flex';
+  introEl.onclick = (e) => { if(e.target === introEl) tancarIntro() };
+  btnEl.onclick = avancarIntro;
+}
+
+window.addEventListener('DOMContentLoaded', iniciarIntro);
+
 // ===== TIPS =====
 let totsElsTips = [];
 let tipsUsats = [];
 
-// ===== INTRO =====
-let slideActual = 0;
-const INTRO_SLIDES = [
-  {emoji: "🙀", titol: "Benvingut a Cat Lingo", text: "Aprèn català en 5 minuts al dia. Tria personatge i comencem."},
-  {emoji: "⛷️", titol: "Vocabulari visual", text: "Toca emojis i aprèn paraules. Desbloqueja packs a la Botiga."},
-  {emoji: "📝", titol: "Gramàtica fàcil", text: "Explicacions curtes amb exemples de les teves lectures."},
-  {emoji: "📚", titol: "Lectures adaptades", text: "Textos al teu nivell A1, A2 o B1. Guanya XP i puja."},
-  {emoji: "🚀", titol: "A jugar!", text: "Prem Saltar o toca la pantalla per començar"}
-];
 
-// ===== INTRO =====
-function mostrarIntro() {
-  const introEl = document.getElementById('intro');
-  if (!introEl) return;
-  introEl.style.display = 'flex';
-  slideActual = 0;
-  pintarSlide();
-  introEl.onclick = () => seguentSlide();
-}
-
-function pintarSlide() {
-  const slide = INTRO_SLIDES[slideActual];
-  document.getElementById('intro-emoji').textContent = slide.emoji;
-  document.getElementById('intro-titol').textContent = slide.titol;
-  document.getElementById('intro-text').textContent = slide.text;
-  document.getElementById('intro-dots').innerHTML = INTRO_SLIDES.map((_, i) => `<span style="opacity:${i===slideActual?1:0.3}">●</span>`).join(' ');
-
-  const btn = document.getElementById('intro-btn');
-  btn.textContent = slideActual === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
-  btn.onclick = (e) => {
-    e.stopPropagation();
-    seguentSlide();
-  };
-
-  const saltarBtn = document.querySelector('#intro button:last-child');
-  if (saltarBtn) {
-    saltarBtn.onclick = (e) => {
-      e.stopPropagation();
-      saltarIntro();
-    };
-  }
-}
-
-function seguentSlide() {
-  vibrar();
-  if (slideActual < INTRO_SLIDES.length - 1) {
-    slideActual++;
-    pintarSlide();
-  } else {
-    saltarIntro();
-  }
-}
-
-function saltarIntro() {
-  estat.introVist = true;
-  guardarEstat();
-  document.getElementById('intro').style.display = 'none';
-}
 
 // ===== UTILS =====
 function quitarSkinTone(emoji) {
