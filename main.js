@@ -109,11 +109,16 @@ function pintarSlide() {
 
 function avancarIntro() {
   introIndex++;
-  if (introIndex >= INTRO_SLIDES.length) return tancarIntro();
-  pintarSlide();
+  if (introIndex >= INTRO_SLIDES.length) {
+    tancarIntro();
+  } else {
+    pintarSlide();
+  }
 }
 
 function tancarIntro() {
+  estat.introVist = true;
+  guardarEstat();
   introEl.style.display = 'none';
 }
 
@@ -121,7 +126,8 @@ function saltarIntro() {
   tancarIntro();
 }
 
-function iniciarIntro() {
+function mostrarIntro() {
+  if (estat.introVist) return; // si ya la vio, no mostrar
   introIndex = 0;
   pintarSlide();
   introEl.style.display = 'flex';
@@ -129,7 +135,6 @@ function iniciarIntro() {
   btnEl.onclick = avancarIntro;
 }
 
-window.addEventListener('DOMContentLoaded', iniciarIntro);
 
 // ===== TIPS =====
 let totsElsTips = [];
@@ -233,12 +238,11 @@ async function carregarDadesMinijoc() {
 document.addEventListener('DOMContentLoaded', async () => {
   regenerarEnergia();
   iniciarRegeneracioAutomatica();
-  mostrarIntro();
+  mostrarIntro(); // <--- usa esta, no iniciarIntro
   await carregarDades();
   await carregarDadesMinijoc();
   actualitzarUI();
   canviarTab('mapa', null);
-  // Auto-generar primera lectura si toca
   setTimeout(() => {
     if (document.getElementById('lectura-texto') &&!lecturaActualText) {
       generarLectura();
