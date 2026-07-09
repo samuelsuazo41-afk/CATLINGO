@@ -98,6 +98,7 @@ function pintarSlide() {
   const textEl = document.getElementById('intro-text');
   const dotsEl = document.getElementById('intro-dots');
   const btnEl = document.getElementById('intro-btn');
+  if(!emojiEl) return; // safety
 
   const s = INTRO_SLIDES[introIndex];
   emojiEl.textContent = s.emoji;
@@ -108,6 +109,7 @@ function pintarSlide() {
 }
 
 function avancarIntro() {
+  vibrar();
   introIndex++;
   if (introIndex >= INTRO_SLIDES.length) {
     tancarIntro();
@@ -120,25 +122,32 @@ function tancarIntro() {
   const introEl = document.getElementById('intro');
   estat.introVist = true;
   guardarEstat();
-  introEl.style.display = 'none';
+  if(introEl) introEl.style.display = 'none';
 }
 
 function saltarIntro() {
+  vibrar();
   tancarIntro();
 }
 
 function mostrarIntro() {
   const introEl = document.getElementById('intro');
   const btnEl = document.getElementById('intro-btn');
+  const saltarBtn = document.querySelector('#intro.btn-sec');
 
   if (!introEl) return;
-  if (estat.introVist) return; // Para forzar que salga: comenta esta línea 1 vez
+  
+  // FORZAR: Borra el flag para que siempre salga en pruebas
+  // estat.introVist = false; // Descomenta esta línea solo para probar 1 vez
+
+  if (estat.introVist) return;
 
   introIndex = 0;
   pintarSlide();
   introEl.style.display = 'flex';
   introEl.onclick = (e) => { if(e.target === introEl) tancarIntro() };
   btnEl.onclick = avancarIntro;
+  if(saltarBtn) saltarBtn.onclick = saltarIntro; // Asegura el botón saltar
 }
 
 
