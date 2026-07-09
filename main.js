@@ -94,8 +94,11 @@ const INTRO_SLIDES = [
 let introIndex = 0;
 
 function mostrarIntro() {
-  // Només mostra si no s'ha vist abans
-  if (estat.introVist) return;
+  // CAMBIO: Forzar que salga siempre al abrir. Comenta la siguiente línea si quieres que solo salga 1 vez.
+  // if (estat.introVist) return;
+
+  // Para debug: descomenta para que salga siempre
+  estat.introVist = false;
 
   const introEl = document.getElementById('intro');
   if (!introEl) {
@@ -106,6 +109,7 @@ function mostrarIntro() {
   introIndex = 0;
   pintarSlideIntro(); // Primer pintem el contingut
   introEl.style.display = 'flex'; // Després mostrem
+  console.log('Intro mostrada');
 }
 
 function pintarSlideIntro() {
@@ -146,10 +150,8 @@ function saltarIntro() {
   if (introEl) introEl.style.display = 'none';
   estat.introVist = true;
   guardarEstat();
+  console.log('Intro saltada/tancada');
 }
-
-// ELIMINAT: Aquest DOMContentLoaded ja no cal aquí.
-// El click es posa al DOMContentLoaded principal de l'app
 
 // ===== TIPS =====
 let totsElsTips = [];
@@ -251,18 +253,28 @@ async function carregarDadesMinijoc() {
 
 // ===== INICIALITZACIÓ =====
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOM carregat, iniciant app...');
   regenerarEnergia();
   iniciarRegeneracioAutomatica();
 
-  // 1. Primero asignar clicks, porque los elementos ya existen
+  // CAMBIO: Poner click ANTES de cargar datos, por si fallan
   const btn = document.getElementById('intro-btn');
-  if(btn) btn.onclick = avancarIntro;
+  if(btn) {
+    btn.onclick = avancarIntro;
+    console.log('Click de intro-btn assignat');
+  } else {
+    console.error('No es troba #intro-btn');
+  }
 
-  // 2. Luego cargar datos
-  await carregarDades();
-  await carregarDadesMinijoc();
+  // CAMBIO: Try/catch para que si falla la carga, la intro igual salga
+  try {
+    await carregarDades();
+    await carregarDadesMinijoc();
+  } catch (e) {
+    console.error('Error carregant dades, però continuo:', e);
+  }
 
-  // 3. Al final mostrar intro, ahora sí con todo listo
+  // Mostrar intro DESPRÉS de tot
   mostrarIntro();
 
   actualitzarUI();
