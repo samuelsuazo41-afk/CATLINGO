@@ -1041,9 +1041,14 @@ function renderBotiga() {
           preu: preuPart,
           emojis: chunk
         });
-      }
-   } else {
-  subPacks = [];
+      } else {
+  subPacks = [{
+    id: pack.id,
+    nom: pack.nom,
+    descripcio: pack.descripcio,
+    preu: pack.preu,
+    emojis: pack.emojis
+  }];
 }
     subPacks.forEach(sp => {
       const comprat = estat.compres.includes(sp.id);
