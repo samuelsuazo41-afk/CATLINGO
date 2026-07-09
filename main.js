@@ -91,14 +91,14 @@ const INTRO_SLIDES = [
 ];
 
 let introIndex = 0;
-const introEl = document.getElementById('intro');
-const emojiEl = document.getElementById('intro-emoji');
-const titolEl = document.getElementById('intro-titol');
-const textEl = document.getElementById('intro-text');
-const dotsEl = document.getElementById('intro-dots');
-const btnEl = document.getElementById('intro-btn');
 
 function pintarSlide() {
+  const emojiEl = document.getElementById('intro-emoji');
+  const titolEl = document.getElementById('intro-titol');
+  const textEl = document.getElementById('intro-text');
+  const dotsEl = document.getElementById('intro-dots');
+  const btnEl = document.getElementById('intro-btn');
+
   const s = INTRO_SLIDES[introIndex];
   emojiEl.textContent = s.emoji;
   titolEl.textContent = s.titol;
@@ -117,6 +117,7 @@ function avancarIntro() {
 }
 
 function tancarIntro() {
+  const introEl = document.getElementById('intro');
   estat.introVist = true;
   guardarEstat();
   introEl.style.display = 'none';
@@ -127,7 +128,12 @@ function saltarIntro() {
 }
 
 function mostrarIntro() {
-  if (estat.introVist) return;
+  const introEl = document.getElementById('intro');
+  const btnEl = document.getElementById('intro-btn');
+
+  if (!introEl) return;
+  if (estat.introVist) return; // Para forzar que salga: comenta esta línea 1 vez
+
   introIndex = 0;
   pintarSlide();
   introEl.style.display = 'flex';
