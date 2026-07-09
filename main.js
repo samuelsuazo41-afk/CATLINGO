@@ -1041,6 +1041,7 @@ function renderBotiga() {
           preu: preuPart,
           emojis: chunk
         });
+       }
       } else {
   subPacks = [{
     id: pack.id,
