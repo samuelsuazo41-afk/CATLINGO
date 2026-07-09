@@ -94,22 +94,20 @@ const INTRO_SLIDES = [
 let introIndex = 0;
 
 function mostrarIntro() {
-  // CAMBIO: Forzar que salga siempre al abrir. Comenta la siguiente línea si quieres que solo salga 1 vez.
-  // if (estat.introVist) return;
-
-  // Para debug: descomenta para que salga siempre
+  // FORZAR: Borra el flag de localStorage para que salga siempre
+  localStorage.removeItem('cat_intro');
   estat.introVist = false;
 
   const introEl = document.getElementById('intro');
   if (!introEl) {
-    console.error('No existeix #intro al DOM');
+    console.error('No existeix #intro al DOM. Revisa que main.js cargue DESPUÉS del HTML');
     return;
   }
 
   introIndex = 0;
-  pintarSlideIntro(); // Primer pintem el contingut
-  introEl.style.display = 'flex'; // Després mostrem
-  console.log('Intro mostrada');
+  pintarSlideIntro();
+  introEl.style.display = 'flex';
+  console.log('Intro mostrada OK');
 }
 
 function pintarSlideIntro() {
@@ -254,19 +252,21 @@ async function carregarDadesMinijoc() {
 // ===== INICIALITZACIÓ =====
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOM carregat, iniciant app...');
+  
+  // Esperar 1 frame para asegurar que el DOM está 100% pintado
+  await new Promise(r => setTimeout(r, 0));
+  
   regenerarEnergia();
   iniciarRegeneracioAutomatica();
 
-  // CAMBIO: Poner click ANTES de cargar datos, por si fallan
   const btn = document.getElementById('intro-btn');
   if(btn) {
     btn.onclick = avancarIntro;
-    console.log('Click de intro-btn assignat');
+    console.log('Click de intro-btn assignat OK');
   } else {
-    console.error('No es troba #intro-btn');
+    console.error('No es troba #intro-btn. Revisa el HTML');
   }
 
-  // CAMBIO: Try/catch para que si falla la carga, la intro igual salga
   try {
     await carregarDades();
     await carregarDadesMinijoc();
@@ -274,16 +274,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error carregant dades, però continuo:', e);
   }
 
-  // Mostrar intro DESPRÉS de tot
-  mostrarIntro();
+  // Pequeño delay para asegurar que todo está listo
+  setTimeout(() => {
+    mostrarIntro();
+  }, 50);
 
   actualitzarUI();
   canviarTab('mapa', null);
-  setTimeout(() => {
-    if (document.getElementById('lectura-texto') &&!lecturaActualText) {
-      generarLectura();
-    }
-  }, 200);
 });
 
 // ===== NAVEGACIÓ =====
@@ -1117,6 +1114,10 @@ function comprarPack(id, preu) {
 // ===== SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // Fuerza update del SW en cada carga durante debug
+      reg.update();
+      console.log('SW registrat');
+    }).catch(err => console.log('SW error:', err));
   });
 }
