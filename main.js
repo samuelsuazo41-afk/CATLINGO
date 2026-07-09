@@ -81,6 +81,7 @@ let NIVELL_MINIJOC = {minEmojis: 2, maxEmojis: 5, nivelActual: parseInt(localSto
 let minijoc = {fraseObjectiu: null, emojisTriats: [], emojisDisponibles: []};
 let minijocInicialitzat = false;
 
+
 // ===== INTRO =====
 const INTRO_SLIDES = [
   { emoji: '🙀', titol: 'Benvingut a Cat Lingo', text: 'Aprèn català jugant amb el teu gat virtual.' },
@@ -93,15 +94,14 @@ const INTRO_SLIDES = [
 let introIndex = 0;
 
 function mostrarIntro() {
-  // Forzar que salga siempre borrando el localStorage
-  localStorage.removeItem('cat_intro'); 
+  localStorage.removeItem('cat_intro'); // Forzar que salga
   estat.introVist = false;
 
   const introEl = document.getElementById('intro');
   if (!introEl) return;
 
   introIndex = 0;
-  pintarSlideIntro(); // pintamos primera slide
+  pintarSlideIntro();
   introEl.style.display = 'flex';
 }
 
@@ -117,9 +117,7 @@ function pintarSlideIntro() {
 function avancarIntro() {
   introIndex++;
   if (introIndex >= INTRO_SLIDES.length) {
-    document.getElementById('intro').style.display = 'none';
-    estat.introVist = true;
-    guardarEstat();
+    saltarIntro();
   } else {
     pintarSlideIntro();
   }
@@ -131,11 +129,11 @@ function saltarIntro() {
   guardarEstat();
 }
 
-// Asignar clicks cuando el DOM esté listo
+// Poner los clicks cuando cargue el DOM
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('intro-btn').onclick = avancarIntro;
+    const btn = document.getElementById('intro-btn');
+    if(btn) btn.onclick = avancarIntro;
 });
-
 
 // ===== TIPS =====
 let totsElsTips = [];
