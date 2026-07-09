@@ -94,27 +94,45 @@ const INTRO_SLIDES = [
 let introIndex = 0;
 
 function mostrarIntro() {
-  localStorage.removeItem('cat_intro'); // Forzar que salga
-  estat.introVist = false;
+  // Només mostra si no s'ha vist abans
+  if (estat.introVist) return;
 
   const introEl = document.getElementById('intro');
-  if (!introEl) return;
+  if (!introEl) {
+    console.error('No existeix #intro al DOM');
+    return;
+  }
 
   introIndex = 0;
-  pintarSlideIntro();
-  introEl.style.display = 'flex';
+  pintarSlideIntro(); // Primer pintem el contingut
+  introEl.style.display = 'flex'; // Després mostrem
 }
 
 function pintarSlideIntro() {
   const s = INTRO_SLIDES[introIndex];
-  document.getElementById('intro-emoji').textContent = s.emoji;
-  document.getElementById('intro-titol').textContent = s.titol;
-  document.getElementById('intro-text').textContent = s.text;
-  document.getElementById('intro-dots').innerHTML = INTRO_SLIDES.map((_, i) => `<span class="dot ${i===introIndex?'actiu':''}"></span>`).join('');
-  document.getElementById('intro-btn').textContent = introIndex === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
+  const emojiEl = document.getElementById('intro-emoji');
+  const titolEl = document.getElementById('intro-titol');
+  const textEl = document.getElementById('intro-text');
+  const dotsEl = document.getElementById('intro-dots');
+  const btnEl = document.getElementById('intro-btn');
+
+  // Validació per si falla algun ID
+  if (!emojiEl ||!titolEl ||!textEl ||!dotsEl ||!btnEl) {
+    console.error('Falten elements de la intro:', {
+      emoji:!!emojiEl, titol:!!titolEl, text:!!textEl, dots:!!dotsEl, btn:!!btnEl
+    });
+    return;
+  }
+
+  emojiEl.textContent = s.emoji;
+  titolEl.textContent = s.titol;
+  textEl.textContent = s.text;
+  dotsEl.innerHTML = INTRO_SLIDES.map((_, i) => `<span class="dot ${i===introIndex?'actiu':''}"></span>`).join('');
+  btnEl.textContent = introIndex === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
 }
 
 function avancarIntro() {
+  vibrar(); // Feedback tàctil
   introIndex++;
   if (introIndex >= INTRO_SLIDES.length) {
     saltarIntro();
@@ -124,16 +142,14 @@ function avancarIntro() {
 }
 
 function saltarIntro() {
-  document.getElementById('intro').style.display = 'none';
+  const introEl = document.getElementById('intro');
+  if (introEl) introEl.style.display = 'none';
   estat.introVist = true;
   guardarEstat();
 }
 
-// Poner los clicks cuando cargue el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('intro-btn');
-    if(btn) btn.onclick = avancarIntro;
-});
+// ELIMINAT: Aquest DOMContentLoaded ja no cal aquí.
+// El click es posa al DOMContentLoaded principal de l'app
 
 // ===== TIPS =====
 let totsElsTips = [];
@@ -237,9 +253,18 @@ async function carregarDadesMinijoc() {
 document.addEventListener('DOMContentLoaded', async () => {
   regenerarEnergia();
   iniciarRegeneracioAutomatica();
-  mostrarIntro(); // <--- usa esta, no iniciarIntro
+
+  // 1. Primero asignar clicks, porque los elementos ya existen
+  const btn = document.getElementById('intro-btn');
+  if(btn) btn.onclick = avancarIntro;
+
+  // 2. Luego cargar datos
   await carregarDades();
   await carregarDadesMinijoc();
+
+  // 3. Al final mostrar intro, ahora sí con todo listo
+  mostrarIntro();
+
   actualitzarUI();
   canviarTab('mapa', null);
   setTimeout(() => {
