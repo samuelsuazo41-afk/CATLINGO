@@ -92,63 +92,49 @@ const INTRO_SLIDES = [
 
 let introIndex = 0;
 
-function pintarSlide() {
-  const emojiEl = document.getElementById('intro-emoji');
-  const titolEl = document.getElementById('intro-titol');
-  const textEl = document.getElementById('intro-text');
-  const dotsEl = document.getElementById('intro-dots');
-  const btnEl = document.getElementById('intro-btn');
-  if(!emojiEl) return; // safety
+function mostrarIntro() {
+  // Forzar que salga siempre borrando el localStorage
+  localStorage.removeItem('cat_intro'); 
+  estat.introVist = false;
 
+  const introEl = document.getElementById('intro');
+  if (!introEl) return;
+
+  introIndex = 0;
+  pintarSlideIntro(); // pintamos primera slide
+  introEl.style.display = 'flex';
+}
+
+function pintarSlideIntro() {
   const s = INTRO_SLIDES[introIndex];
-  emojiEl.textContent = s.emoji;
-  titolEl.textContent = s.titol;
-  textEl.textContent = s.text;
-  dotsEl.innerHTML = INTRO_SLIDES.map((_, i) => `<span class="dot ${i===introIndex?'actiu':''}"></span>`).join('');
-  btnEl.textContent = introIndex === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
+  document.getElementById('intro-emoji').textContent = s.emoji;
+  document.getElementById('intro-titol').textContent = s.titol;
+  document.getElementById('intro-text').textContent = s.text;
+  document.getElementById('intro-dots').innerHTML = INTRO_SLIDES.map((_, i) => `<span class="dot ${i===introIndex?'actiu':''}"></span>`).join('');
+  document.getElementById('intro-btn').textContent = introIndex === INTRO_SLIDES.length - 1? 'Començar' : 'Següent';
 }
 
 function avancarIntro() {
-  vibrar();
   introIndex++;
   if (introIndex >= INTRO_SLIDES.length) {
-    tancarIntro();
+    document.getElementById('intro').style.display = 'none';
+    estat.introVist = true;
+    guardarEstat();
   } else {
-    pintarSlide();
+    pintarSlideIntro();
   }
 }
 
-function tancarIntro() {
-  const introEl = document.getElementById('intro');
+function saltarIntro() {
+  document.getElementById('intro').style.display = 'none';
   estat.introVist = true;
   guardarEstat();
-  if(introEl) introEl.style.display = 'none';
 }
 
-function saltarIntro() {
-  vibrar();
-  tancarIntro();
-}
-
-function mostrarIntro() {
-  const introEl = document.getElementById('intro');
-  const btnEl = document.getElementById('intro-btn');
-  const saltarBtn = document.querySelector('#intro.btn-sec');
-
-  if (!introEl) return;
-  
-  // FORZAR: Borra el flag para que siempre salga en pruebas
-  // estat.introVist = false; // Descomenta esta línea solo para probar 1 vez
-
-  if (estat.introVist) return;
-
-  introIndex = 0;
-  pintarSlide();
-  introEl.style.display = 'flex';
-  introEl.onclick = (e) => { if(e.target === introEl) tancarIntro() };
-  btnEl.onclick = avancarIntro;
-  if(saltarBtn) saltarBtn.onclick = saltarIntro; // Asegura el botón saltar
-}
+// Asignar clicks cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('intro-btn').onclick = avancarIntro;
+});
 
 
 // ===== TIPS =====
